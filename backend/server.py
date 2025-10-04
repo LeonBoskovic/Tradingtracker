@@ -8,11 +8,11 @@ from pydantic import BaseModel, Field, EmailStr
 from typing import List, Optional
 from datetime import datetime, timedelta, timezone, date, time
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 import os
 import uuid
 import logging
 import shutil
+import hashlib
 from pathlib import Path
 
 # Load environment variables
