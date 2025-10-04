@@ -12,7 +12,6 @@ from passlib.context import CryptContext
 import os
 import uuid
 import logging
-import aiofiles
 import shutil
 from pathlib import Path
 
