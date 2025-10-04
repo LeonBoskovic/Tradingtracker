@@ -165,6 +165,11 @@ def parse_from_mongo(item):
         item['updated_at'] = datetime.fromisoformat(item['updated_at'])
     return item
 
+# Root endpoint
+@api_router.get("/")
+async def root():
+    return {"message": "Trading Journal API", "status": "running"}
+
 # Auth endpoints
 @api_router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
