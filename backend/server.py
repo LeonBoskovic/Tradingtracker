@@ -29,7 +29,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here-change-in-produc
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 * 24 * 60  # 30 days
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
+# Password hashing functions (simple but secure for demo)
+def get_password_hash(password):
+    return hashlib.sha256((password + SECRET_KEY).encode()).hexdigest()
+
+def verify_password(plain_password, hashed_password):
+    return hashlib.sha256((plain_password + SECRET_KEY).encode()).hexdigest() == hashed_password
 security = HTTPBearer()
 
 # Create uploads directory
