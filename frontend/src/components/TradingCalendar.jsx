@@ -1,79 +1,73 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay } from "date-fns";
-import { de } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { format, parse, startOfWeek, getDay } from "date-fns";
+import enUS from "date-fns/locale/en-US";
+import axios from "axios";
+import { AuthContext, API } from "../App";
 
-const locales = { de };
+const locales = { "en-US": enUS };
+const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
-  getDay,
-  locales,
-});
-
-export default function TradingCalendar() {
+const TradingCalendar = () => {
+  const { user } = useContext(AuthContext);
   const [trades, setTrades] = useState([]);
 
   useEffect(() => {
-    const fetchTrades = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/trades`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await response.json();
-
-        const formatted = data.map((trade) => ({
-          id: trade.id,
-          title: `${trade.pair} (${trade.trade_type})`,
-          start: new Date(trade.date),
-          end: new Date(trade.date),
-          allDay: true,
-          resource: trade,
-        }));
-
-        setTrades(formatted);
-      } catch (error) {
-        console.error("Fehler beim Laden der Trades:", error);
-      }
-    };
-
     fetchTrades();
   }, []);
 
-  const events = useMemo(() => trades, [trades]);
+  const fetchTrades = async () => {
+    try {
+      const res = await axios.get(`${API}/trades`);
+      setTrades(res.data);
+    } catch (error) {
+      console.error("Failed to fetch trades:", error);
+    }
+  };
 
-  const handleSelectEvent = (event) => {
-    const t = event.resource;
-    alert(
-      `📈 Trade Details:\n\n` +
-        `Paar: ${t.pair}\n` +
-        `Typ: ${t.trade_type}\n` +
-        `Eintritt: ${t.entry_price}\n` +
-        `Austritt: ${t.exit_price || "Noch offen"}\n` +
-        `PnL: ${t.pnl || 0}`
-    );
+  // Map Trades zu Calendar-Events
+  const events = trades.map((trade) => {
+    // Stelle sicher, dass trade.date ein Date-Objekt ist
+    const tradeDate = new Date(trade.date);
+    return {
+      title: `${trade.pair} - ${trade.trade_type} - P&L: ${trade.pnl || 0}`,
+      start: tradeDate,
+      end: tradeDate,
+      allDay: true,
+      resource: trade,
+      // Long grün, Short rot
+      color: trade.trade_type === "Long" ? "green" : "red"
+    };
+  });
+
+  // Custom Event Style
+  const eventStyleGetter = (event) => {
+    const backgroundColor = event.color || "blue";
+    return {
+      style: {
+        backgroundColor,
+        color: "white",
+        borderRadius: "4px",
+        padding: "2px",
+        border: "none"
+      }
+    };
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">📅 Trading Kalender</h2>
-      <div style={{ height: "80vh", background: "white", borderRadius: "12px", padding: "10px" }}>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: "100%" }}
-          onSelectEvent={handleSelectEvent}
-          views={["month", "week", "day"]}
-          popup
-        />
-      </div>
+    <div style={{ height: "500px" }}>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: "100%" }}
+        eventPropGetter={eventStyleGetter}
+        popup
+      />
     </div>
   );
-}
+};
 
+export default TradingCalendar;
