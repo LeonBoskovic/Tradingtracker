@@ -4,6 +4,7 @@ import { AuthContext, API } from '../App';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import axios from 'axios';
+import TradingCalendar from "../components/TradingCalendar";
 import { 
   TrendingUp, 
   TrendingDown, 
