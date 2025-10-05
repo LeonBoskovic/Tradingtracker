@@ -6,6 +6,7 @@ import enUS from "date-fns/locale/en-US";
 import axios from "axios";
 import { AuthContext, API } from "../App";
 
+// Lokalisierung für react-big-calendar
 const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
 
@@ -26,11 +27,13 @@ const TradingCalendar = () => {
     }
   };
 
-// Map Trades zu Calendar-Events
-const events = trades.map((trade) => {
-  const tradeDate = new Date(trade.date);
-  // Gewinn = grün, Verlust = rot
-  const backgroundColor = trade.pnl > 0 ? "green" : trade.pnl < 0 ? "red" :
+  // Map Trades zu Calendar-Events
+  const events = trades.map((trade) => {
+    const tradeDate = new Date(trade.date);
+
+    // Gewinn = grün, Verlust = rot, P&L = 0 = grau
+    const backgroundColor =
+      trade.pnl > 0 ? "green" : trade.pnl < 0 ? "red" : "gray";
 
     return {
       title: `${trade.pair} - ${trade.trade_type} - P&L: ${trade.pnl || 0}`,
@@ -38,22 +41,20 @@ const events = trades.map((trade) => {
       end: tradeDate,
       allDay: true,
       resource: trade,
-      // Long grün, Short rot
-      color: trade.trade_type === "Long" ? "green" : "red"
+      color: backgroundColor,
     };
   });
 
   // Custom Event Style
   const eventStyleGetter = (event) => {
-    const backgroundColor = event.color || "blue";
     return {
       style: {
-        backgroundColor,
+        backgroundColor: event.color || "blue",
         color: "white",
         borderRadius: "4px",
         padding: "2px",
-        border: "none"
-      }
+        border: "none",
+      },
     };
   };
 
