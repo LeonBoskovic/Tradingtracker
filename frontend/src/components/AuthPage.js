@@ -13,7 +13,7 @@ const AuthPage = () => {
   const { login } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [registerData, setRegisterData] = useState({ email: '', password: '', full_name: '' });
+  const [registerData, setRegisterData] = useState({ email: '', password: '', full_name: '', balance '' });
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,7 +34,13 @@ const AuthPage = () => {
     setLoading(true);
     
     try {
-      const response = await axios.post(`${API}/auth/register`, registerData);
+      const response = await axios.post(`${API}/auth/register`, {
+      full_name: registerData.full_name,
+      email: registerData.email,
+      password: registerData.password,
+      balance: registerData.balance,
+      });
+
       login(response.data.user, response.data.access_token);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Registration failed');
@@ -195,6 +201,21 @@ const AuthPage = () => {
                         required
                         className="input-focus"
                         data-testid="register-password-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-balance">Starting Balance</Label>
+                      <Input
+                        id="register-balance"
+                        type="number"
+                        placeholder="Enter your starting balance"
+                        value={registerData.balance}
+                        onChange={(e) =>
+                          setRegisterData({ ...registerData, balance: e.target.value })
+                        }
+                        required
+                        className="input-focus"
+                        data-testid="register-balance-input"
                       />
                     </div>
                     <Button
