@@ -26,10 +26,12 @@ const TradingCalendar = () => {
     }
   };
 
-  // Map Trades zu Calendar-Events
-  const events = trades.map((trade) => {
-    // Stelle sicher, dass trade.date ein Date-Objekt ist
-    const tradeDate = new Date(trade.date);
+// Map Trades zu Calendar-Events
+const events = trades.map((trade) => {
+  const tradeDate = new Date(trade.date);
+  // Gewinn = grün, Verlust = rot
+  const backgroundColor = trade.pnl > 0 ? "green" : trade.pnl < 0 ? "red" :
+
     return {
       title: `${trade.pair} - ${trade.trade_type} - P&L: ${trade.pnl || 0}`,
       start: tradeDate,
