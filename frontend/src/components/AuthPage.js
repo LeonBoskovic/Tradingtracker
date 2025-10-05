@@ -13,7 +13,7 @@ const AuthPage = () => {
   const { login } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [registerData, setRegisterData] = useState({ email: '', password: '', full_name: '', balance '' });
+  const [registerData, setRegisterData] = useState({ email: '', password: '', full_name: '', balance: '' });
 
   const handleLogin = async (e) => {
     e.preventDefault();
