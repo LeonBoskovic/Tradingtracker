@@ -204,6 +204,18 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+                      {/* Trading Calendar */}
+                      <div className="mt-8 animate-fade-in">
+                        <Card className="glass-effect border-0 shadow-lg">
+                          <CardHeader>
+                            <CardTitle className="text-xl text-gray-900">Trading Calendar</CardTitle>
+                            <CardDescription>See all your trades in a calendar view</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <TradingCalendar />
+    </CardContent>
+  </Card>
+</div>        
       </div>
     </div>
   );
