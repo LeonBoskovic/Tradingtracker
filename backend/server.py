@@ -53,6 +53,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     full_name: str
+    balance: Optional[float] = 0
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -187,6 +188,7 @@ async def register(user_data: UserCreate):
     
     user_dict = user.dict()
     user_dict["password"] = hashed_password
+    user_dict["balance"] = float(user_data.balance)
     user_dict = prepare_for_mongo(user_dict)
     
     await db.users.insert_one(user_dict)
